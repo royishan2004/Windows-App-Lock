@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Windows App Lock (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Windows App Lock (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
