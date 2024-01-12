@@ -27,5 +27,28 @@ namespace Windows_App_Lock
         {
             this.InitializeComponent();
         }
+        private void AppList_Click(object sender, RoutedEventArgs e)
+        {
+           
+        }
+        private void AcitivtyLogs_Click(object sender, RoutedEventArgs e)
+        {
+            // Custom logic or actions to perform when the button is clicked
+            // This method is executed when the button is clicked.
+        }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            // Custom logic or actions to perform when the button is clicked
+            // This method is executed when the button is clicked.
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            // Custom logic or actions to perform when the button is clicked
+            // This method is executed when the button is clicked.
+        }
+
+
     }
 }

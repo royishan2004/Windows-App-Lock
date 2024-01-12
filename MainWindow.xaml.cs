@@ -42,7 +42,7 @@ namespace Windows_App_Lock
                 NavigateToPage(selectedItemTag);
             }
         }
-        private void NavigateToPage(string pageTag)
+        public void NavigateToPage(string pageTag)
         {
            
             switch (pageTag)
@@ -73,7 +73,7 @@ namespace Windows_App_Lock
                 default:
                     break;
             } 
-        } 
+        }
 
 
     }
