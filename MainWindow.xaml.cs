@@ -26,8 +26,55 @@ namespace Windows_App_Lock
         public MainWindow()
         {
             this.InitializeComponent();
+            nvSample.SelectionChanged += nvSample_SelectionChanged; ;
+            NavigateToPage("Home");
         }
+        private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            if (args.SelectedItem is NavigationViewItem settingsItem && settingsItem.Tag.Equals("Settings"))
+            {
+                contentFrame.Navigate(typeof(Settings));
+            }
+            else
+            {
+                // Handle regular item click
+                string selectedItemTag = (args.SelectedItem as NavigationViewItem)?.Tag?.ToString();
+                NavigateToPage(selectedItemTag);
+            }
+        }
+        private void NavigateToPage(string pageTag)
+        {
+           
+            switch (pageTag)
+            {
+                case "Home":
+                    contentFrame.BackStack.Clear();
+                    contentFrame.Navigate(typeof(Home));
+                    break;
 
-       
+                case "AppList":
+                    contentFrame.BackStack.Clear();
+                    contentFrame.Navigate(typeof(AppList));
+                    
+                    break;
+
+                case "AcitvityLogs":
+                    contentFrame.BackStack.Clear();
+                    contentFrame.Navigate(typeof(ActivityLogs));
+
+                    break;
+
+                case "About":
+                    contentFrame.BackStack.Clear();
+                    contentFrame.Navigate(typeof(About));
+
+                    break;
+
+                default:
+                    break;
+            } 
+        } 
+
+
     }
 }
