@@ -11,11 +11,35 @@
 
        <StackPanel Orientation="Vertical">
         <TextBlock Text="Windows App Lock" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <AppBarButton Icon="Like" Label="SymbolIcon" />
-            <AppBarButton Icon="Like" Label="SymbolIcon" />
-            <AppBarButton Icon="Like" Label="SymbolIcon" />
+        <TextBlock Padding="20" HorizontalAlignment="Center" Text="Welcome to your ultimate solution for locking your apps securely with Windows Hello!
+                    &#x0a;The below buttons are broken and do not work" TextAlignment="Center"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="85" >
+            <Button AutomationProperties.Name="App List" Margin="0,0,10,0">
+                <StackPanel Orientation="Vertical" >
+                    <Image Source="/Assets/icons8-list-100 (1).png" AutomationProperties.Name="App List"/>
+                    <TextBlock Text="App List" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button AutomationProperties.Name="Activity Logs" Margin="0,0,10,0">
+                <StackPanel Orientation="Vertical">
+                    <Image Source="/Assets/icons8-document-100.png" AutomationProperties.Name="Activity Logs"/>
+                    <TextBlock Text="Activity Logs" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button AutomationProperties.Name="Settings" Margin="0,0,10,0">
+                <StackPanel Orientation="Vertical">
+                    <Image Source="/Assets/icons8-settings-100.png" AutomationProperties.Name="Settings"/>
+                    <TextBlock Text="Settings" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button AutomationProperties.Name="About" Margin="0,0,10,0">
+                <StackPanel Orientation="Vertical">
+                    <Image Source="/Assets/icons8-about-100.png" AutomationProperties.Name="About"/>
+                    <TextBlock Text="About" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
+        <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
        </StackPanel>
 
 </Page>

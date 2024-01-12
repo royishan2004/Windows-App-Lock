@@ -15,6 +15,10 @@
     <None Remove="About.xaml" />
     <None Remove="ActivityLogs.xaml" />
     <None Remove="AppList.xaml" />
+    <None Remove="Assets\icons8-about-100.png" />
+    <None Remove="Assets\icons8-document-100.png" />
+    <None Remove="Assets\icons8-list-100 %281%29.png" />
+    <None Remove="Assets\icons8-settings-100.png" />
     <None Remove="Home.xaml" />
     <None Remove="Settings.xaml" />
   </ItemGroup>
