@@ -7,33 +7,31 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid VerticalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <!-- Define columns for better control of the layout -->
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
 
         <!-- Left column with NavigationView -->
-        <NavigationView x:Name="nvSample">
+        <NavigationView x:Name="nvSample" PaneDisplayMode="Left" IsPaneOpen="True" PaneTitle="Options" IsBackButtonVisible="Collapsed">
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="Home" Content="Home" Tag="SamplePage1" />
-                <NavigationViewItem Icon="AllApps" Content="App List" Tag="SamplePage2" />
-                <NavigationViewItem Icon="List" Content="Activity Logs" Tag="SamplePage3" />
-                <NavigationViewItem Icon="Globe" Content="About" Tag="SamplePage4" />
+                <NavigationViewItem Icon="Home" Content="Home" Tag="Home" />
+                <NavigationViewItem Icon="AllApps" Content="App List" Tag="AppList" />
+                <NavigationViewItem Icon="List" Content="Activity Logs" Tag="AcitvityLogs" />
+                <NavigationViewItem Icon="Globe" Content="About" Tag="About" />
             </NavigationView.MenuItems>
-            <Frame x:Name="contentFrame"/>
+            
         </NavigationView>
 
-        <!-- Center-aligned title -->
-        <TextBlock Text="Windows App Lock" Grid.Column="1" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25"/>
-
-        <!-- Three large icon buttons -->
-        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
-            <AppBarButton Icon="Like" Label="SymbolIcon" />
-            <AppBarButton Icon="Like" Label="SymbolIcon" />
-            <AppBarButton Icon="Like" Label="SymbolIcon" />
-        </StackPanel>
+        <Grid Grid.Column="1">
+            <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </Grid>
 
         <!-- Additional controls can be added here if needed -->
     </Grid>
