@@ -18,7 +18,7 @@
             <TextBlock Text="Developer: Ishan Roy"/>
             <RichTextBlock>
                 <Paragraph>
-                    <Hyperlink NavigateUri="https://ishanroy.vercel.app">
+                    <Hyperlink NavigateUri="https://github.com/royishan2004">
                         Visit my website</Hyperlink>
                 </Paragraph>
             </RichTextBlock>

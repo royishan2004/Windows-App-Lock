@@ -1,73 +1,16 @@
-<!-- AppList.xaml -->
+<?xml version="1.0" encoding="utf-8"?>
 <Page
-    x:Name="AppListPage"
     x:Class="Windows_App_Lock.AppList"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Windows_App_Lock"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel Orientation="Vertical" x:Name="AppListStack">
+    <StackPanel Orientation="Vertical">
         <TextBlock Text="App List" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25"/>
-       
-        <ListBox x:Name="appListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="30,0,0,0">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding IconPath}" Width="30" Height="30" Margin="0,0,10,0"/>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Path}" Foreground="Gray"/>
-                        </StackPanel>
-                        <Button Content="Delete" Margin="10,0,0,0" Click="DeleteApp_Click"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-
-        <AppBarButton Label="Add" Icon="Add" Margin="30,10,0,0" Click="AddApp_Click"/>
-
-        <Popup x:Name="addAppPopup" IsOpen="False" HorizontalOffset="0" VerticalOffset="0">
-            <Border BorderBrush="Black" BorderThickness="1" Background="Black" Width="400" Height="400">
-                <Border.Shadow>
-                    <ThemeShadow />
-                </Border.Shadow>
-                <StackPanel Margin="20">
-                    <TextBlock Text="Add App" FontWeight="SemiBold" FontSize="20" Margin="0,0,0,10"/>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <ListView x:Name="appListView" SelectionMode="Single">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Source="{Binding IconPath}" Width="30" Height="30" Margin="0,0,10,0"/>
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                            <TextBlock Text="{Binding Path}" Foreground="Gray"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </ScrollViewer>
-
-                    <Grid HorizontalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <!-- Takes up the remaining space -->
-                            <ColumnDefinition Width="Auto"/>
-                            <!-- Width based on content -->
-                        </Grid.ColumnDefinitions>
-
-                        <Button Style="{StaticResource AccentButtonStyle}" Content="OK" Click="OKButton_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,0"/>
-                        <Button Content="Cancel" Click="ClosePopupClicked" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,10,10,0" Grid.Column="1"/>
-                    </Grid>
-                </StackPanel>
-            </Border>
-        </Popup>
         
     </StackPanel>
 </Page>
