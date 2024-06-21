@@ -1,34 +1,29 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System.Threading.Tasks;
+using Windows.Security.Credentials;
+using Windows.Storage;
+using Microsoft.UI.Xaml.Media;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+
 
 namespace Windows_App_Lock
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
+        private const string LockAppKey = "LockAppEnabled";
+
         public MainWindow()
         {
             this.InitializeComponent();
-            nvSample.SelectionChanged += nvSample_SelectionChanged; ;
+            nvSample.SelectionChanged += nvSample_SelectionChanged;
             NavigateToPage("Home");
+
+            // Check if app lock is enabled and authenticate
+            CheckAppLockOnStartupAsync();
         }
+
         private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItem is NavigationViewItem settingsItem && settingsItem.Tag.Equals("Settings"))
@@ -42,9 +37,9 @@ namespace Windows_App_Lock
                 NavigateToPage(selectedItemTag);
             }
         }
+
         public void NavigateToPage(string pageTag)
         {
-           
             switch (pageTag)
             {
                 case "Home":
@@ -55,26 +50,66 @@ namespace Windows_App_Lock
                 case "AppList":
                     contentFrame.BackStack.Clear();
                     contentFrame.Navigate(typeof(AppList));
-                    
                     break;
 
-                case "AcitvityLogs":
+                case "ActivityLogs":
                     contentFrame.BackStack.Clear();
                     contentFrame.Navigate(typeof(ActivityLogs));
-
                     break;
 
                 case "About":
                     contentFrame.BackStack.Clear();
                     contentFrame.Navigate(typeof(About));
-
                     break;
 
                 default:
                     break;
-            } 
+            }
+        }
+
+        private async void CheckAppLockOnStartupAsync()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            bool isLockEnabled = localSettings.Values.ContainsKey(LockAppKey) && (bool)localSettings.Values[LockAppKey];
+
+            if (isLockEnabled)
+            {
+                bool isAuthenticated = await AuthenticateWithWindowsHelloAsync();
+                if (!isAuthenticated)
+                {
+                    blurGrid.Visibility = Visibility.Visible;
+                    Application.Current.Exit();
+                }
+                else
+                {
+                    blurGrid.Visibility = Visibility.Collapsed;
+                }
+            }
+            else {
+                blurGrid.Visibility = Visibility.Collapsed;
+            }
         }
 
 
+        private async Task<bool> AuthenticateWithWindowsHelloAsync()
+        {
+            try
+            {
+                KeyCredentialRetrievalResult result = await KeyCredentialManager.RequestCreateAsync("WindowsHelloSampleCredential", KeyCredentialCreationOption.ReplaceExisting);
+
+                if (result.Status == KeyCredentialStatus.Success)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

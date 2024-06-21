@@ -7,32 +7,33 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid VerticalAlignment="Stretch">
-        <Grid.ColumnDefinitions>
-            <!-- Define columns for better control of the layout -->
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <!-- Main content grid -->
+        <Grid x:Name="mainGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
+            <!-- NavigationView on the left -->
+            <NavigationView x:Name="nvSample" PaneDisplayMode="Left" IsPaneOpen="True" PaneTitle="Options" IsBackButtonVisible="Collapsed">
+                <NavigationView.MenuItems>
+                    <NavigationViewItem Icon="Home" Content="Home" Tag="Home" />
+                    <NavigationViewItem Icon="AllApps" Content="App List" Tag="AppList" />
+                    <NavigationViewItem Icon="List" Content="Activity Logs" Tag="ActivityLogs" />
+                    <NavigationViewItem Icon="Globe" Content="About" Tag="About" />
+                </NavigationView.MenuItems>
+            </NavigationView>
 
-        <!-- Left column with NavigationView -->
-        <NavigationView x:Name="nvSample" PaneDisplayMode="Left" IsPaneOpen="True" PaneTitle="Options" IsBackButtonVisible="Collapsed">
-            <NavigationView.MenuItems>
-                <NavigationViewItem Icon="Home" Content="Home" Tag="Home" />
-                <NavigationViewItem Icon="AllApps" Content="App List" Tag="AppList" />
-                <NavigationViewItem Icon="List" Content="Activity Logs" Tag="AcitvityLogs" />
-                <NavigationViewItem Icon="Globe" Content="About" Tag="About" />
-            </NavigationView.MenuItems>
-            
-        </NavigationView>
+            <!-- Frame to host content -->
+            <Frame x:Name="contentFrame" Grid.Column="1"/>
 
-        <Grid Grid.Column="1">
-            <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
-
-        <!-- Additional controls can be added here if needed -->
+        <!-- Blur overlay -->
+        <Grid x:Name="blurGrid" Background="Transparent">
+            <Rectangle Fill="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
+            </Rectangle>
+            <ProgressRing Width="75" Height="75" IsActive="True"/>
+        </Grid>
     </Grid>
 </Window>

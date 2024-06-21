@@ -9,7 +9,181 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+
     <Grid>
-        <TextBlock Text="Settings" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Settings" 
+                   HorizontalAlignment="Center" 
+                   Padding="30" 
+                   FontFamily="Segoe UI" 
+                   FontWeight="SemiBold" 
+                   FontSize="25"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="8" Margin="20">
+
+                <!-- Check for Windows Hello Capability -->
+                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+      BorderThickness="1" 
+      Padding="16" 
+      CornerRadius="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="Windows Hello Status" 
+                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Check if Windows Hello is enabled." 
+                   Style="{ThemeResource BodyTextBlockStyle}" 
+                   Opacity="0.6"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" Content="Check" Click="CheckWindowsHello"/>
+                </Grid>
+                
+                <InfoBar x:Name="InfoBarSuccess" 
+                 Title="Success"
+                 Message="Windows Hello is set up correctly and is ready to use."
+                 IsOpen="False" 
+                 Severity="Success"/>
+
+                <InfoBar x:Name="InfoBarFailure" 
+                 Title="Error"
+                 Message="Windows Hello is not set up. Please set it up in the Windows Settings under 'Accounts'."
+                 IsOpen="False" 
+                 Severity="Error"/>
+                
+                <!-- Theme Setting -->
+                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                      BorderThickness="1" 
+                      Padding="16" 
+                      CornerRadius="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel>
+                        <TextBlock Text="Theme" 
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Choose your app theme" 
+                                   Style="{ThemeResource BodyTextBlockStyle}" 
+                                   Opacity="0.6"/>
+                    </StackPanel>
+                    <ComboBox Grid.Column="1" 
+                              SelectedIndex="0" 
+                              MinWidth="120">
+                        <ComboBoxItem Content="Light"/>
+                        <ComboBoxItem Content="Dark"/>
+                        <ComboBoxItem Content="System default"/>
+                    </ComboBox>
+                </Grid>
+                
+
+                <!-- Self App Lock -->
+                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                      BorderThickness="1" 
+                      Padding="16" 
+                      CornerRadius="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Lock Windows App Lock" 
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Lock/Unlock this app with Windows Hello." 
+                                   Style="{ThemeResource BodyTextBlockStyle}" 
+                                   Opacity="0.6"/>
+                    </StackPanel>
+                    <ToggleSwitch x:Name="LockAppToggleSwitch" Toggled="LockAppToggleSwitch_Toggled" Grid.Column="1"/>
+                </Grid>
+
+                <InfoBar x:Name="TurnOffFailure" 
+                 Title="Error"
+                 Message="Failed to turn off app lock for this app."
+                 IsOpen="False" 
+                 Severity="Error"/>
+
+                <!-- Language Setting -->
+                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                      BorderThickness="1" 
+                      Padding="16" 
+                      CornerRadius="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Language" 
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Select your preferred language" 
+                                   Style="{ThemeResource BodyTextBlockStyle}" 
+                                   Opacity="0.6"/>
+                    </StackPanel>
+                    <ComboBox Grid.Column="1" 
+                              SelectedIndex="0" 
+                              MinWidth="120">
+                        <ComboBoxItem Content="English"/>
+                        <ComboBoxItem Content="Spanish"/>
+                        <ComboBoxItem Content="French"/>
+                    </ComboBox>
+                </Grid>
+
+                <!-- Privacy Setting -->
+                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                      BorderThickness="1" 
+                      Padding="16" 
+                      CornerRadius="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Privacy" 
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Manage data collection settings" 
+                                   Style="{ThemeResource BodyTextBlockStyle}" 
+                                   Opacity="0.6"/>
+                    </StackPanel>
+                    <CheckBox Grid.Column="1" 
+                              Content="Allow data collection"/>
+                </Grid>
+
+                <!-- About Section -->
+                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                      BorderThickness="1" 
+                      Padding="16" 
+                      CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock Text="About" 
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Version: 1.0.0" 
+                                   Style="{ThemeResource BodyTextBlockStyle}" 
+                                   Opacity="0.6"/>
+                        <HyperlinkButton Content="Check for updates" 
+                                         Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Reset Settings -->
+                <Button Content="Reset to Default Settings" 
+                        HorizontalAlignment="Stretch" 
+                        Margin="0,8,0,0"/>
+            </StackPanel>
+        </ScrollViewer>
+
+
     </Grid>
 </Page>
