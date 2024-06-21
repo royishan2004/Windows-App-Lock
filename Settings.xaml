@@ -113,6 +113,13 @@
                  IsOpen="False" 
                  Severity="Error"/>
 
+                <InfoBar x:Name="TurnOffWarning" 
+                 Title="Warning"
+                 Message="This app is not locked by Windows Hello. Unauthorised users of this device can change app lock settings of your apps."
+                 IsOpen="False"
+                 IsClosable="False"
+                 Severity="Warning"/>
+
                 <!-- Language Setting -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 

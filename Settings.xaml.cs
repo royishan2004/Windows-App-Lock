@@ -32,6 +32,10 @@ namespace Windows_App_Lock
         {
             this.InitializeComponent();
             LoadToggleSwitchState();
+            if (!LockAppToggleSwitch.IsOn)
+            {
+                TurnOffWarning.IsOpen = true;
+            }
         }
 
         private async void CheckWindowsHello(object sender, RoutedEventArgs e)
@@ -69,8 +73,13 @@ namespace Windows_App_Lock
 
         private async void LockAppToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
+            if (LockAppToggleSwitch.IsOn)
+            {
+                TurnOffWarning.IsOpen = false;
+            }
             if (!LockAppToggleSwitch.IsOn)
             {
+                TurnOffWarning.IsOpen = true;
                 // Authenticate using Windows Hello when toggling off
                 bool isAuthenticated = await AuthenticateWithWindowsHelloAsync();
                 if (!isAuthenticated)
@@ -78,6 +87,7 @@ namespace Windows_App_Lock
                     // If authentication fails, turn on the toggle switch again
                     LockAppToggleSwitch.IsOn = true;
                     TurnOffFailure.IsOpen = true;
+                    TurnOffWarning.IsOpen = false;
                     return;
                 }
             }
