@@ -38,6 +38,13 @@ namespace Windows_App_Lock
             }
         }
 
+        private async void TestCheck(object sender, RoutedEventArgs e)
+        {
+            var processMonitor = new ProcessMonitor();
+            await processMonitor.MonitorProcessesAsync();
+
+        }
+
         private async void CheckWindowsHello(object sender, RoutedEventArgs e)
         {
             

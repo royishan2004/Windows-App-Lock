@@ -167,21 +167,25 @@
                               Content="Allow data collection"/>
                 </Grid>
 
-                <!-- About Section -->
+                <!-- Test Check -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      BorderThickness="1" 
-                      Padding="16" 
-                      CornerRadius="8">
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                BorderThickness="1" 
+                Padding="16" 
+                CornerRadius="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
                     <StackPanel>
-                        <TextBlock Text="About" 
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="Version: 1.0.0" 
-                                   Style="{ThemeResource BodyTextBlockStyle}" 
-                                   Opacity="0.6"/>
-                        <HyperlinkButton Content="Check for updates" 
-                                         Margin="0,8,0,0"/>
+                        <TextBlock Text="Test Lock" 
+             Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="WhatsApp will be tested." 
+             Style="{ThemeResource BodyTextBlockStyle}" 
+             Opacity="0.6"/>
                     </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" Content="Test" Click="TestCheck"/>
                 </Grid>
 
                 <!-- Reset Settings -->
