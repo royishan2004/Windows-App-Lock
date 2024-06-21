@@ -33,6 +33,5 @@
             <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
 
-        <!-- Additional controls can be added here if needed -->
     </Grid>
 </Window>
