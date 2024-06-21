@@ -77,8 +77,12 @@ namespace Windows_App_Lock
                 bool isAuthenticated = await AuthenticateWithWindowsHelloAsync();
                 if (!isAuthenticated)
                 {
-                    // Handle authentication failure
+                    blurGrid.Visibility = Visibility.Visible;
                     Application.Current.Exit();
+                }
+                else
+                {
+                    blurGrid.Visibility = Visibility.Collapsed;
                 }
             }
         }
