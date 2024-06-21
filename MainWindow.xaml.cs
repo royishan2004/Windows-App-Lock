@@ -85,6 +85,9 @@ namespace Windows_App_Lock
                     blurGrid.Visibility = Visibility.Collapsed;
                 }
             }
+            else {
+                blurGrid.Visibility = Visibility.Collapsed;
+            }
         }
 
 

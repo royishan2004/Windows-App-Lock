@@ -36,6 +36,7 @@ namespace Windows_App_Lock
 
         private async void CheckWindowsHello(object sender, RoutedEventArgs e)
         {
+            
             bool isWindowsHelloEnabled = await CheckWindowsHelloEnabledAsync();
 
             if (isWindowsHelloEnabled)
@@ -48,8 +49,9 @@ namespace Windows_App_Lock
                 InfoBarSuccess.IsOpen = false;
                 InfoBarFailure.IsOpen = true;
             }
+            
         }
-
+        
         private async Task<bool> CheckWindowsHelloEnabledAsync()
         {
             try
@@ -64,18 +66,19 @@ namespace Windows_App_Lock
             }
         }
 
+
         private async void LockAppToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            if (LockAppToggleSwitch.IsOn)
+            if (!LockAppToggleSwitch.IsOn)
             {
-                // Authenticate using Windows Hello
+                // Authenticate using Windows Hello when toggling off
                 bool isAuthenticated = await AuthenticateWithWindowsHelloAsync();
                 if (!isAuthenticated)
                 {
-                    // If authentication fails, turn off the toggle switch
-                    LockAppToggleSwitch.IsOn = false;
-                    InfoBarFailure.IsOpen = true;
-                    InfoBarFailure.Message = "Failed to authenticate with Windows Hello.";
+                    // If authentication fails, turn on the toggle switch again
+                    LockAppToggleSwitch.IsOn = true;
+                    TurnOffFailure.IsOpen = true;
+                    return;
                 }
             }
             SaveToggleSwitchState();

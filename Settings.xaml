@@ -107,6 +107,12 @@
                     <ToggleSwitch x:Name="LockAppToggleSwitch" Toggled="LockAppToggleSwitch_Toggled" Grid.Column="1"/>
                 </Grid>
 
+                <InfoBar x:Name="TurnOffFailure" 
+                 Title="Error"
+                 Message="Failed to turn off app lock for this app."
+                 IsOpen="False" 
+                 Severity="Error"/>
+
                 <!-- Language Setting -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
@@ -177,5 +183,7 @@
                         Margin="0,8,0,0"/>
             </StackPanel>
         </ScrollViewer>
-        </Grid>
+
+
+    </Grid>
 </Page>

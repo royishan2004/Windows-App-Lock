@@ -33,7 +33,7 @@
         <Grid x:Name="blurGrid" Background="Transparent">
             <Rectangle Fill="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
             </Rectangle>
-            <ProgressRing Width="200" Height="200" IsActive="True"/>
+            <ProgressRing Width="75" Height="75" IsActive="True"/>
         </Grid>
     </Grid>
 </Window>
