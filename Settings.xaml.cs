@@ -41,13 +41,13 @@ namespace Windows_App_Lock
         private async void TestCheck(object sender, RoutedEventArgs e)
         {
             var processMonitor = new ProcessMonitor();
-            await processMonitor.MonitorProcessesAsync();
+            await processMonitor.BackGroundStart();
 
         }
 
         private async void CheckWindowsHello(object sender, RoutedEventArgs e)
         {
-            
+
             bool isWindowsHelloEnabled = await CheckWindowsHelloEnabledAsync();
 
             if (isWindowsHelloEnabled)
@@ -60,9 +60,9 @@ namespace Windows_App_Lock
                 InfoBarSuccess.IsOpen = false;
                 InfoBarFailure.IsOpen = true;
             }
-            
+
         }
-        
+
         private async Task<bool> CheckWindowsHelloEnabledAsync()
         {
             try
@@ -149,4 +149,3 @@ namespace Windows_App_Lock
     }
 
 }
-

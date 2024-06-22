@@ -4,12 +4,32 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Security.Credentials;
+using System.Timers;
 
 namespace Windows_App_Lock
 {
+
+    public class ForegroundAppDetector {
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+        public static string GetForegroundProcessName()
+        {
+            IntPtr hwnd = GetForegroundWindow();
+            GetWindowThreadProcessId(hwnd, out uint processId);
+
+            Process proc = Process.GetProcessById((int)processId);
+            return proc.ProcessName;
+        }
+    }
     public class ProcessMonitor
     {
         private const string AppCredentialKey = "AppLockerCredential";
+        private static Timer _timer;
+        private static string targetProcessName = "Discord";
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SuspendThread(IntPtr hThread);
@@ -17,27 +37,56 @@ namespace Windows_App_Lock
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool ResumeThread(IntPtr hThread);
 
-        public async Task MonitorProcessesAsync()
+        public async Task BackGroundStart()
         {
-            string[] monitoredApps = { "WhatsApp"}; // Add other process names as needed
+            _timer = new Timer(1000); // 1000 ms = 1 second
+            _timer.Elapsed += CheckForegroundApp;
+            _timer.Start();
+            
+        }
 
-            foreach (var processName in monitoredApps)
+        private static async void CheckForegroundApp(object state, ElapsedEventArgs e)
+        {
+            string foregroundProcess = ForegroundAppDetector.GetForegroundProcessName();
+            Process[] processes = Process.GetProcessesByName(foregroundProcess);
+
+
+            if (foregroundProcess.Equals(targetProcessName, StringComparison.OrdinalIgnoreCase))
             {
-                var process = Process.GetProcessesByName(processName).FirstOrDefault();
-                if (process != null)
+                _timer.Stop();
+                Console.WriteLine($"{targetProcessName} is in the foreground.");
+                if (processes.Length > 0)
                 {
-                    SuspendProcess(process);
-                    bool isAuthenticated = await AuthenticateWithWindowsHelloAsync();
+                    Process foreground = processes[0];
+                    ProcessMonitor monitor = new ProcessMonitor();
+                    monitor.SuspendProcess(foreground);
+
+                    bool isAuthenticated = await monitor.AuthenticateWithWindowsHelloAsync();
                     if (isAuthenticated)
                     {
-                        ResumeProcess(process);
+                        monitor.ResumeProcess(foreground);
                         // Handle success message if needed
                     }
                     else
                     {
-                        process.Kill(); //end process
+                        foreground.Kill(); //end process
                     }
+                    await WaitForProcessToLeaveForeground(foreground);
                 }
+            }
+        }
+
+        private static async Task WaitForProcessToLeaveForeground(Process process)
+        {
+            while (true)
+            {
+                string foregroundProcess = ForegroundAppDetector.GetForegroundProcessName();
+                if (!foregroundProcess.Equals(targetProcessName, StringComparison.OrdinalIgnoreCase))
+                {
+                    _timer.Start(); // Resume the timer after the target app is not in the foreground
+                    break;
+                }
+                await Task.Delay(1000); // Check every second
             }
         }
 
@@ -57,6 +106,7 @@ namespace Windows_App_Lock
             }
             return false;
         }
+
 
         private void SuspendProcess(Process process)
         {
