@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -8,13 +9,16 @@ using System.Timers;
 
 namespace Windows_App_Lock
 {
-
-    public class ForegroundAppDetector {
+    public class ForegroundAppDetector
+    {
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsWindowVisible(IntPtr hWnd);
 
         public static string GetForegroundProcessName()
         {
@@ -24,12 +28,27 @@ namespace Windows_App_Lock
             Process proc = Process.GetProcessById((int)processId);
             return proc.ProcessName;
         }
+
+        public static bool IsWindowVisible(string processName)
+        {
+            Process[] processes = Process.GetProcessesByName(processName);
+            if (processes.Length > 0)
+            {
+                IntPtr hwnd = processes[0].MainWindowHandle;
+                return IsWindowVisible(hwnd);
+            }
+            return false;
+        }
     }
+
     public class ProcessMonitor
     {
         private const string AppCredentialKey = "AppLockerCredential";
         private static Timer _timer;
-        private static string targetProcessName = "Discord";
+        private static List<string> targetProcessNames = new List<string> { "WhatsApp Beta" }; // Add your target apps here
+        private static HashSet<string> authenticatedProcesses = new HashSet<string>();
+        private static Dictionary<string, bool> processVisibility = new Dictionary<string, bool>();
+        private static Dictionary<string, bool> authenticationInProgress = new Dictionary<string, bool>();
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SuspendThread(IntPtr hThread);
@@ -37,53 +56,79 @@ namespace Windows_App_Lock
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool ResumeThread(IntPtr hThread);
 
-        public async Task BackGroundStart()
+        public async Task StartMonitoringAsync()
         {
             _timer = new Timer(1000); // 1000 ms = 1 second
             _timer.Elapsed += CheckForegroundApp;
             _timer.Start();
-            
+
+            foreach (var processName in targetProcessNames)
+            {
+                processVisibility[processName] = ForegroundAppDetector.IsWindowVisible(processName);
+                authenticationInProgress[processName] = false;
+            }
         }
 
-        private static async void CheckForegroundApp(object state, ElapsedEventArgs e)
+        private static async void CheckForegroundApp(object sender, ElapsedEventArgs e)
         {
             string foregroundProcess = ForegroundAppDetector.GetForegroundProcessName();
             Process[] processes = Process.GetProcessesByName(foregroundProcess);
 
-
-            if (foregroundProcess.Equals(targetProcessName, StringComparison.OrdinalIgnoreCase))
+            if (targetProcessNames.Contains(foregroundProcess, StringComparer.OrdinalIgnoreCase) && !authenticatedProcesses.Contains(foregroundProcess))
             {
-                _timer.Stop();
-                Console.WriteLine($"{targetProcessName} is in the foreground.");
-                if (processes.Length > 0)
-                {
-                    Process foreground = processes[0];
-                    ProcessMonitor monitor = new ProcessMonitor();
-                    monitor.SuspendProcess(foreground);
+                bool isVisible = ForegroundAppDetector.IsWindowVisible(foregroundProcess);
 
-                    bool isAuthenticated = await monitor.AuthenticateWithWindowsHelloAsync();
-                    if (isAuthenticated)
+                if (isVisible && !authenticationInProgress[foregroundProcess])
+                {
+                    Console.WriteLine($"{foregroundProcess} window is visible and in the foreground.");
+                    if (processes.Length > 0)
                     {
-                        monitor.ResumeProcess(foreground);
-                        // Handle success message if needed
+                        authenticationInProgress[foregroundProcess] = true;
+
+                        Process foreground = processes[0];
+                        ProcessMonitor monitor = new ProcessMonitor();
+                        monitor.SuspendProcess(foreground);
+
+                        bool isAuthenticated = await monitor.AuthenticateWithWindowsHelloAsync();
+                        if (isAuthenticated)
+                        {
+                            monitor.ResumeProcess(foreground);
+                            authenticatedProcesses.Add(foregroundProcess);
+                            await WaitForProcessToBeClosed(foregroundProcess);
+                        }
+                        else
+                        {
+                            foreground.Kill(); // End process
+                        }
+
+                        authenticationInProgress[foregroundProcess] = false;
                     }
-                    else
-                    {
-                        foreground.Kill(); //end process
-                    }
-                    await WaitForProcessToLeaveForeground(foreground);
+                }
+            }
+
+            foreach (var processName in targetProcessNames)
+            {
+                bool isVisible = ForegroundAppDetector.IsWindowVisible(processName);
+                if (processVisibility[processName] && !isVisible)
+                {
+                    processVisibility[processName] = false;
+                    authenticatedProcesses.Remove(processName);
+                }
+                else if (!processVisibility[processName] && isVisible)
+                {
+                    processVisibility[processName] = true;
                 }
             }
         }
 
-        private static async Task WaitForProcessToLeaveForeground(Process process)
+        private static async Task WaitForProcessToBeClosed(string processName)
         {
             while (true)
             {
-                string foregroundProcess = ForegroundAppDetector.GetForegroundProcessName();
-                if (!foregroundProcess.Equals(targetProcessName, StringComparison.OrdinalIgnoreCase))
+                bool isVisible = ForegroundAppDetector.IsWindowVisible(processName);
+                if (!isVisible)
                 {
-                    _timer.Start(); // Resume the timer after the target app is not in the foreground
+                    authenticatedProcesses.Remove(processName);
                     break;
                 }
                 await Task.Delay(1000); // Check every second
@@ -103,10 +148,10 @@ namespace Windows_App_Lock
             catch (Exception ex)
             {
                 // Handle authentication errors
+                Console.WriteLine($"Authentication error: {ex.Message}");
             }
             return false;
         }
-
 
         private void SuspendProcess(Process process)
         {

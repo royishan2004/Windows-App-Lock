@@ -41,7 +41,7 @@ namespace Windows_App_Lock
         private async void TestCheck(object sender, RoutedEventArgs e)
         {
             var processMonitor = new ProcessMonitor();
-            await processMonitor.BackGroundStart();
+            await processMonitor.StartMonitoringAsync();
 
         }
 
