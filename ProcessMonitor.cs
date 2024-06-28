@@ -95,13 +95,13 @@ namespace Windows_App_Lock
                         if (isAuthenticated)
                         {
                             monitor.ResumeProcess(foreground);
-                            LogAuthentication(foregroundProcess);
+                            LogAuthentication(foregroundProcess, "Unlocked");
                             authenticatedProcesses.Add(foregroundProcess);
                             await WaitForProcessToBeClosed(foregroundProcess);
-                            
                         }
                         else
                         {
+                            LogAuthentication(foregroundProcess, "Auth Failed");
                             foreground.Kill();
                         }
 
@@ -204,7 +204,7 @@ namespace Windows_App_Lock
             DIRECT_IMPERSONATION = 0x0200
         }
 
-        private static void LogAuthentication(string processName)
+        private static void LogAuthentication(string processName, string status)
         {
             try
             {
@@ -212,7 +212,8 @@ namespace Windows_App_Lock
                 {
                     AppName = processName,
                     Date = DateTime.Now.ToShortDateString(),
-                    Time = DateTime.Now.ToLongTimeString()
+                    Time = DateTime.Now.ToLongTimeString(),
+                    Status = status // Log the status
                 };
                 authenticationLogs.Add(logEntry);
                 SaveLogsToLocalSettings();
@@ -222,6 +223,7 @@ namespace Windows_App_Lock
                 Console.WriteLine($"Failed to log authentication: {ex.Message}");
             }
         }
+
 
         private static void SaveLogsToLocalSettings()
         {
@@ -240,7 +242,7 @@ namespace Windows_App_Lock
                 // Append new logs
                 foreach (var log in authenticationLogs)
                 {
-                    string logEntry = $"{log.AppName},{log.Date},{log.Time}";
+                    string logEntry = $"{log.AppName},{log.Date},{log.Time},{log.Status}"; // Added Status
                     logEntries.Add(logEntry);
                 }
 
@@ -255,7 +257,6 @@ namespace Windows_App_Lock
                 Console.WriteLine($"Failed to save logs: {ex.Message}");
             }
         }
-
 
         public static List<AuthenticationLog> LoadLogsFromLocalSettings()
         {
@@ -274,13 +275,14 @@ namespace Windows_App_Lock
                         if (!string.IsNullOrEmpty(logEntry))
                         {
                             string[] logParts = logEntry.Split(',');
-                            if (logParts.Length == 3)
+                            if (logParts.Length == 4)
                             {
                                 logs.Add(new AuthenticationLog
                                 {
                                     AppName = logParts[0],
                                     Date = logParts[1],
-                                    Time = logParts[2]
+                                    Time = logParts[2],
+                                    Status = logParts[3] // Added Status
                                 });
                             }
                         }

@@ -12,11 +12,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- For the title -->
             <RowDefinition Height="5*"/>
-            <!-- 75% height for the ScrollViewer -->
             <RowDefinition Height="1*"/>
-            <!-- 25% height for the button -->
         </Grid.RowDefinitions>
 
         <TextBlock Text="Activity Logs" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25" Grid.Row="0"/>
@@ -27,6 +24,7 @@
                     <controls:DataGridTextColumn Header="App Name" Binding="{Binding AppName}" Width="*"/>
                     <controls:DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
                     <controls:DataGridTextColumn Header="Time" Binding="{Binding Time}" Width="*"/>
+                    <controls:DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
         </ScrollViewer>

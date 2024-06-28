@@ -1,12 +1,13 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
-using System.Timers;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+using CommunityToolkit.WinUI.UI.Controls;
 
 namespace Windows_App_Lock
 {
@@ -20,6 +21,8 @@ namespace Windows_App_Lock
             this.InitializeComponent();
             InitializeTimer();
             LoadLogs(); // Initial load of logs
+
+            LogsDataGrid.LoadingRow += DataGrid_LoadingRow;
         }
 
         private void InitializeTimer()
@@ -63,7 +66,7 @@ namespace Windows_App_Lock
             }
         }
 
-        private void ClearLogsButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private void ClearLogsButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -76,6 +79,18 @@ namespace Windows_App_Lock
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to clear logs: {ex.Message}");
+            }
+        }
+
+        private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            var log = e.Row.DataContext as AuthenticationLog;
+            if (log != null)
+            {
+                if (log.Status == "Auth Failed")
+                {
+                    e.Row.Background = new SolidColorBrush(Microsoft.UI.Colors.DarkRed);
+                }
             }
         }
     }
