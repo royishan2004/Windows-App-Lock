@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Security.Credentials;
 using System.Timers;
+using Windows.Storage;
 
 namespace Windows_App_Lock
 {
@@ -45,10 +46,11 @@ namespace Windows_App_Lock
     {
         private const string AppCredentialKey = "AppLockerCredential";
         private static Timer _timer;
-        private static List<string> targetProcessNames = new List<string> { "WhatsApp Beta" }; // Add your target apps here
+        private static List<string> targetProcessNames = new List<string> { "Discord", "opera", "Notepad", "LenovoVantage" };
         private static HashSet<string> authenticatedProcesses = new HashSet<string>();
         private static Dictionary<string, bool> processVisibility = new Dictionary<string, bool>();
         private static Dictionary<string, bool> authenticationInProgress = new Dictionary<string, bool>();
+        private static List<AuthenticationLog> authenticationLogs = new List<AuthenticationLog>();
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SuspendThread(IntPtr hThread);
@@ -58,7 +60,7 @@ namespace Windows_App_Lock
 
         public async Task StartMonitoringAsync()
         {
-            _timer = new Timer(1000); // 1000 ms = 1 second
+            _timer = new Timer(500);
             _timer.Elapsed += CheckForegroundApp;
             _timer.Start();
 
@@ -93,12 +95,14 @@ namespace Windows_App_Lock
                         if (isAuthenticated)
                         {
                             monitor.ResumeProcess(foreground);
+                            LogAuthentication(foregroundProcess);
                             authenticatedProcesses.Add(foregroundProcess);
                             await WaitForProcessToBeClosed(foregroundProcess);
+                            
                         }
                         else
                         {
-                            foreground.Kill(); // End process
+                            foreground.Kill();
                         }
 
                         authenticationInProgress[foregroundProcess] = false;
@@ -131,7 +135,7 @@ namespace Windows_App_Lock
                     authenticatedProcesses.Remove(processName);
                     break;
                 }
-                await Task.Delay(1000); // Check every second
+                await Task.Delay(1000);
             }
         }
 
@@ -147,7 +151,6 @@ namespace Windows_App_Lock
             }
             catch (Exception ex)
             {
-                // Handle authentication errors
                 Console.WriteLine($"Authentication error: {ex.Message}");
             }
             return false;
@@ -199,6 +202,98 @@ namespace Windows_App_Lock
             SET_THREAD_TOKEN = 0x0080,
             IMPERSONATE = 0x0100,
             DIRECT_IMPERSONATION = 0x0200
+        }
+
+        private static void LogAuthentication(string processName)
+        {
+            try
+            {
+                var logEntry = new AuthenticationLog
+                {
+                    AppName = processName,
+                    Date = DateTime.Now.ToShortDateString(),
+                    Time = DateTime.Now.ToLongTimeString()
+                };
+                authenticationLogs.Add(logEntry);
+                SaveLogsToLocalSettings();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to log authentication: {ex.Message}");
+            }
+        }
+
+        private static void SaveLogsToLocalSettings()
+        {
+            try
+            {
+                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+                List<string> logEntries = new List<string>();
+
+                // Load existing logs if any
+                if (localSettings.Values.ContainsKey("AuthenticationLogs"))
+                {
+                    string existingLogs = localSettings.Values["AuthenticationLogs"] as string;
+                    logEntries.AddRange(existingLogs.Split(';'));
+                }
+
+                // Append new logs
+                foreach (var log in authenticationLogs)
+                {
+                    string logEntry = $"{log.AppName},{log.Date},{log.Time}";
+                    logEntries.Add(logEntry);
+                }
+
+                // Save all logs
+                localSettings.Values["AuthenticationLogs"] = string.Join(";", logEntries);
+                Console.WriteLine($"Logs saved to local settings.");
+
+                authenticationLogs.Clear();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to save logs: {ex.Message}");
+            }
+        }
+
+
+        public static List<AuthenticationLog> LoadLogsFromLocalSettings()
+        {
+            try
+            {
+                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+                List<AuthenticationLog> logs = new List<AuthenticationLog>();
+
+                if (localSettings.Values.ContainsKey("AuthenticationLogs"))
+                {
+                    string logsData = localSettings.Values["AuthenticationLogs"] as string;
+                    string[] logEntries = logsData.Split(';');
+
+                    foreach (string logEntry in logEntries)
+                    {
+                        if (!string.IsNullOrEmpty(logEntry))
+                        {
+                            string[] logParts = logEntry.Split(',');
+                            if (logParts.Length == 3)
+                            {
+                                logs.Add(new AuthenticationLog
+                                {
+                                    AppName = logParts[0],
+                                    Date = logParts[1],
+                                    Time = logParts[2]
+                                });
+                            }
+                        }
+                    }
+                }
+
+                return logs;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load logs: {ex.Message}");
+                return new List<AuthenticationLog>();
+            }
         }
     }
 }
