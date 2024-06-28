@@ -17,6 +17,8 @@ namespace Windows_App_Lock
         public MainWindow()
         {
             this.InitializeComponent();
+            this.ExtendsContentIntoTitleBar = true;
+            this.SetTitleBar(null);
             nvSample.SelectionChanged += nvSample_SelectionChanged;
             NavigateToPage("Home");
 
