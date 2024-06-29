@@ -16,22 +16,23 @@ using System.Threading.Tasks;
 using Windows.Security.Credentials;
 using Windows.Storage;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace Windows_App_Lock
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class Settings : Page
     {
-
         private const string LockAppKey = "LockAppEnabled";
+        private const string ThemeKey = "AppTheme";
+
         public Settings()
         {
             this.InitializeComponent();
+            Loaded += Settings_Loaded;
+        }
+
+        private void Settings_Loaded(object sender, RoutedEventArgs e)
+        {
             LoadToggleSwitchState();
+            LoadThemeSetting();
             if (!LockAppToggleSwitch.IsOn)
             {
                 TurnOffWarning.IsOpen = true;
@@ -42,12 +43,10 @@ namespace Windows_App_Lock
         {
             var processMonitor = new ProcessMonitor();
             await processMonitor.StartMonitoringAsync();
-
         }
 
         private async void CheckWindowsHello(object sender, RoutedEventArgs e)
         {
-
             bool isWindowsHelloEnabled = await CheckWindowsHelloEnabledAsync();
 
             if (isWindowsHelloEnabled)
@@ -60,7 +59,6 @@ namespace Windows_App_Lock
                 InfoBarSuccess.IsOpen = false;
                 InfoBarFailure.IsOpen = true;
             }
-
         }
 
         private async Task<bool> CheckWindowsHelloEnabledAsync()
@@ -77,6 +75,61 @@ namespace Windows_App_Lock
             }
         }
 
+        private async void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedTheme = ((ComboBoxItem)((ComboBox)sender).SelectedItem).Content.ToString();
+            SetAppTheme(selectedTheme);
+            await Task.Delay(500);
+            SaveThemeSetting(selectedTheme);
+        }
+
+        private void SetAppTheme(string theme)
+        {
+            if (this is FrameworkElement rootElement)
+            {
+                if (theme == "Light")
+                {
+                    rootElement.RequestedTheme = ElementTheme.Light;
+                }
+                else if (theme == "Dark")
+                {
+                    rootElement.RequestedTheme = ElementTheme.Dark;
+                }
+                else
+                {
+                    rootElement.RequestedTheme = ElementTheme.Default;
+                }
+            }
+        }
+
+        private void LoadThemeSetting()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey(ThemeKey))
+            {
+                string theme = localSettings.Values[ThemeKey].ToString();
+                SetAppTheme(theme);
+
+                foreach (ComboBoxItem item in ThemeComboBox.Items)
+                {
+                    if (item.Content.ToString() == theme)
+                    {
+                        ThemeComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                ThemeComboBox.SelectedIndex = 2; // Default to Default theme
+            }
+        }
+
+        private void SaveThemeSetting(string theme)
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values[ThemeKey] = theme;
+        }
 
         private async void LockAppToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
@@ -145,7 +198,5 @@ namespace Windows_App_Lock
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
             localSettings.Values[LockAppKey] = LockAppToggleSwitch.IsOn;
         }
-
     }
-
 }

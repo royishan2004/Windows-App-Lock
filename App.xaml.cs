@@ -15,6 +15,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,6 +31,7 @@ namespace Windows_App_Lock
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
+        private const string ThemeKey = "AppTheme";
         public App()
         {
             this.InitializeComponent();
@@ -43,7 +45,43 @@ namespace Windows_App_Lock
         {
             m_window = new MainWindow();
             m_window.Activate();
+            //LoadThemeSetting();
         }
+
+        /*
+        private void SetAppTheme(string theme)
+        {
+                if (Application.Current.Resources is ResourceDictionary resources)
+                {
+                    if (theme == "Light")
+                    {
+                        resources["RequestedTheme"] = ApplicationTheme.Light;
+                    }
+                    else if (theme == "Dark")
+                    {
+                        resources["RequestedTheme"] = ApplicationTheme.Dark;
+                    }
+                    else if (theme == "System default")
+                    {
+                        resources["RequestedTheme"] = Application.Current.RequestedTheme;
+                    }
+                }
+            }
+        
+
+        private void LoadThemeSetting()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey(ThemeKey))
+            {
+                string theme = localSettings.Values[ThemeKey].ToString();
+                SetAppTheme(theme);
+            }
+            else
+            {
+                SetAppTheme("System default");
+            }
+        } */
 
         private Window m_window;
     }

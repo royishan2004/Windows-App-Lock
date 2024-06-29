@@ -77,9 +77,11 @@
                                    Style="{ThemeResource BodyTextBlockStyle}" 
                                    Opacity="0.6"/>
                     </StackPanel>
-                    <ComboBox Grid.Column="1" 
+                    <ComboBox x:Name="ThemeComboBox"
+                              Grid.Column="1" 
                               SelectedIndex="0" 
-                              MinWidth="120">
+                              MinWidth="120"
+                              SelectionChanged="ThemeComboBox_SelectionChanged">
                         <ComboBoxItem Content="Light"/>
                         <ComboBoxItem Content="Dark"/>
                         <ComboBoxItem Content="System default"/>
