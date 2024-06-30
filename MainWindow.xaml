@@ -17,6 +17,12 @@
 
             <!-- NavigationView on the left -->
             <NavigationView x:Name="nvSample" PaneDisplayMode="Left" IsPaneOpen="True" PaneTitle="Options" IsBackButtonVisible="Collapsed">
+                <NavigationView.Resources>
+                    <Style TargetType="NavigationView">
+                        <Setter Property="Background" Value="{ThemeResource NavigationViewDefaultPaneBackground}" />
+                        <Setter Property="Foreground" Value="{ThemeResource NavigationViewDefaultPaneForeground}" />
+                    </Style>
+                </NavigationView.Resources>
                 <NavigationView.MenuItems>
                     <NavigationViewItem Icon="Home" Content="Home" Tag="Home" />
                     <NavigationViewItem Icon="AllApps" Content="App List" Tag="AppList" />

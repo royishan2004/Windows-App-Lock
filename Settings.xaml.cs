@@ -85,7 +85,7 @@ namespace Windows_App_Lock
 
         private void SetAppTheme(string theme)
         {
-            if (this is FrameworkElement rootElement)
+            if (App.m_window?.Content is FrameworkElement rootElement)
             {
                 if (theme == "Light")
                 {

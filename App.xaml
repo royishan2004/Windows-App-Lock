@@ -10,7 +10,20 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
-            <!-- Other app resources here -->
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="White"/>
+                    <SolidColorBrush x:Key="NavigationViewDefaultPaneForeground" Color="Black"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="Black"/>
+                    <SolidColorBrush x:Key="NavigationViewDefaultPaneForeground" Color="White"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="{ThemeResource SystemBaseHighColor}"/>
+                    <SolidColorBrush x:Key="NavigationViewDefaultPaneForeground" Color="{ThemeResource SystemBaseLowColor}"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -24,6 +24,7 @@ namespace Windows_App_Lock
 
             // Check if app lock is enabled and authenticate
             CheckAppLockOnStartupAsync();
+
         }
 
         private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
