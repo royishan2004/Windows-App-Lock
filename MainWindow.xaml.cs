@@ -60,6 +60,11 @@ namespace Windows_App_Lock
                     contentFrame.Navigate(typeof(ActivityLogs));
                     break;
 
+                case "Help":
+                    contentFrame.BackStack.Clear();
+                    contentFrame.Navigate(typeof(Help));
+                    break;
+
                 case "About":
                     contentFrame.BackStack.Clear();
                     contentFrame.Navigate(typeof(About));

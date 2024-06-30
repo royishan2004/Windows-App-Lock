@@ -27,6 +27,7 @@
                     <NavigationViewItem Icon="Home" Content="Home" Tag="Home" />
                     <NavigationViewItem Icon="AllApps" Content="App List" Tag="AppList" />
                     <NavigationViewItem Icon="List" Content="Activity Logs" Tag="ActivityLogs" />
+                    <NavigationViewItem Icon="Help" Content="Help" Tag="Help" />
                     <NavigationViewItem Icon="Globe" Content="About" Tag="About" />
                 </NavigationView.MenuItems>
             </NavigationView>
