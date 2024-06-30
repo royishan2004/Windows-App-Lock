@@ -22,6 +22,7 @@ namespace Windows_App_Lock
     {
         private const string LockAppKey = "LockAppEnabled";
         private const string ThemeKey = "AppTheme";
+        private const string NotificationsKey = "NotificationsEnabled";
 
         public Settings()
         {
@@ -31,8 +32,9 @@ namespace Windows_App_Lock
 
         private void Settings_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadToggleSwitchState();
+            LoadSelfLockState();
             LoadThemeSetting();
+            LoadNotificationsSetting();
             if (!LockAppToggleSwitch.IsOn)
             {
                 TurnOffWarning.IsOpen = true;
@@ -151,7 +153,7 @@ namespace Windows_App_Lock
                     return;
                 }
             }
-            SaveToggleSwitchState();
+            SaveSelfLockState();
         }
 
         private async Task<bool> AuthenticateWithWindowsHelloAsync()
@@ -176,7 +178,7 @@ namespace Windows_App_Lock
             }
         }
 
-        private void LoadToggleSwitchState()
+        private void LoadSelfLockState()
         {
             // Load the state from local settings
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
@@ -188,15 +190,40 @@ namespace Windows_App_Lock
             {
                 // Default value if not set
                 LockAppToggleSwitch.IsOn = true;
-                SaveToggleSwitchState();
+                SaveSelfLockState();
             }
         }
 
-        private void SaveToggleSwitchState()
+        private void SaveSelfLockState()
         {
             // Save the state to local settings
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
             localSettings.Values[LockAppKey] = LockAppToggleSwitch.IsOn;
+        }
+
+        private void LoadNotificationsSetting()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey(NotificationsKey))
+            {
+                NotificationsToggleSwitch.IsOn = (bool)localSettings.Values[NotificationsKey];
+            }
+            else
+            {
+                NotificationsToggleSwitch.IsOn = true; // Default value
+                SaveNotificationsSetting();
+            }
+        }
+
+        private void SaveNotificationsSetting()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values[NotificationsKey] = NotificationsToggleSwitch.IsOn;
+        }
+
+        private void NotificationsToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            SaveNotificationsSetting();
         }
     }
 }

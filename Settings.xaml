@@ -122,6 +122,28 @@
                  IsClosable="False"
                  Severity="Warning"/>
 
+
+                <!-- Notifications Settings -->
+                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                  BorderThickness="1" 
+                  Padding="16" 
+                  CornerRadius="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Notifications" 
+                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Enable or disable push notifications for authentication." 
+                   Style="{ThemeResource BodyTextBlockStyle}" 
+                   Opacity="0.6"/>
+                    </StackPanel>
+                    <ToggleSwitch x:Name="NotificationsToggleSwitch" Toggled="NotificationsToggleSwitch_Toggled" Grid.Column="1"/>
+                </Grid>
+
+
                 <!-- Language Setting -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
