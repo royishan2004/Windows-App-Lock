@@ -45,6 +45,7 @@ namespace Windows_App_Lock
     public class ProcessMonitor
     {
         private const string AppCredentialKey = "AppLockerCredential";
+        private const string NotificationsKey = "NotificationsEnabled";
         private static Timer _timer;
         private static List<string> targetProcessNames = new List<string> { "Discord", "opera", "Notepad", "LenovoVantage" };
         private static HashSet<string> authenticatedProcesses = new HashSet<string>();
@@ -91,7 +92,7 @@ namespace Windows_App_Lock
                         ProcessMonitor monitor = new ProcessMonitor();
                         monitor.SuspendProcess(foreground);
 
-                        bool isAuthenticated = await monitor.AuthenticateWithWindowsHelloAsync();
+                        bool isAuthenticated = await monitor.AuthenticateWithWindowsHelloAsync(foregroundProcess);
                         if (isAuthenticated)
                         {
                             monitor.ResumeProcess(foreground);
@@ -139,13 +140,20 @@ namespace Windows_App_Lock
             }
         }
 
-        private async Task<bool> AuthenticateWithWindowsHelloAsync()
+        private async Task<bool> AuthenticateWithWindowsHelloAsync(string processName)
         {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            bool areNotificationsEnabled = localSettings.Values.ContainsKey(NotificationsKey) && (bool)localSettings.Values[NotificationsKey];
+
+            //string successImage = "ms-appx:///Assets/icons8-correct-100.png"; 
+            //string failureImage = "ms-appx:///Assets/icons8-cancel-100.png";
+
             try
             {
                 var result = await KeyCredentialManager.RequestCreateAsync(AppCredentialKey, KeyCredentialCreationOption.ReplaceExisting);
                 if (result.Status == KeyCredentialStatus.Success)
                 {
+                    if (areNotificationsEnabled) { NotificationHelper.ShowToastNotification("Authentication Success", $"You have successfully authenticated {processName}."); }
                     return true;
                 }
             }
@@ -153,6 +161,7 @@ namespace Windows_App_Lock
             {
                 Console.WriteLine($"Authentication error: {ex.Message}");
             }
+            if (areNotificationsEnabled) { NotificationHelper.ShowToastNotification("Authentication Failed", $"Failed to authenticate {processName}. Please try again."); }
             return false;
         }
 

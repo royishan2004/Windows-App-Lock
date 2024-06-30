@@ -12,6 +12,8 @@
     <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\icons8-cancel-100.png" />
+    <Content Remove="Assets\icons8-correct-100.png" />
     <Content Remove="Assets\icons8-padlock-400.png" />
     <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-16.png" />
     <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-24.png" />
@@ -40,6 +42,7 @@
     <None Remove="Assets\icons8-document-100.png" />
     <None Remove="Assets\icons8-list-100 %281%29.png" />
     <None Remove="Assets\icons8-settings-100.png" />
+    <None Remove="Help.xaml" />
     <None Remove="Home.xaml" />
     <None Remove="Settings.xaml" />
   </ItemGroup>
@@ -98,6 +101,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Help.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!-- 

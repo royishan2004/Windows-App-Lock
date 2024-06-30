@@ -28,10 +28,10 @@
 
                 <!-- Check for Windows Hello Capability -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
-      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-      BorderThickness="1" 
-      Padding="16" 
-      CornerRadius="8">
+                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                  BorderThickness="1" 
+                  Padding="16" 
+                  CornerRadius="8"> 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
@@ -58,8 +58,8 @@
                  Message="Windows Hello is not set up. Please set it up in the Windows Settings under 'Accounts'."
                  IsOpen="False" 
                  Severity="Error"/>
-                
-                <!-- Theme Setting -->
+
+                 <!-- Startup Settings -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
                       BorderThickness="1" 
@@ -69,24 +69,17 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    
                     <StackPanel>
-                        <TextBlock Text="Theme" 
+                        <TextBlock Text="Startup Settings" 
                                    Style="{ThemeResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="Choose your app theme" 
+                        <TextBlock Text="Automatically start Windows App Lock when Windows starts." 
                                    Style="{ThemeResource BodyTextBlockStyle}" 
                                    Opacity="0.6"/>
                     </StackPanel>
-                    <ComboBox Grid.Column="1" 
-                              SelectedIndex="0" 
-                              MinWidth="120">
-                        <ComboBoxItem Content="Light"/>
-                        <ComboBoxItem Content="Dark"/>
-                        <ComboBoxItem Content="System default"/>
-                    </ComboBox>
+                    <CheckBox Grid.Column="1" 
+                              Content="Auto Start"/>
                 </Grid>
                 
-
                 <!-- Self App Lock -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
@@ -120,7 +113,7 @@
                  IsClosable="False"
                  Severity="Warning"/>
 
-                <!-- Language Setting -->
+                <!-- Theme Setting -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
                       BorderThickness="1" 
@@ -130,41 +123,43 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+
                     <StackPanel>
-                        <TextBlock Text="Language" 
+                        <TextBlock Text="Theme" 
                                    Style="{ThemeResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="Select your preferred language" 
+                        <TextBlock Text="Choose your app theme" 
                                    Style="{ThemeResource BodyTextBlockStyle}" 
                                    Opacity="0.6"/>
                     </StackPanel>
-                    <ComboBox Grid.Column="1" 
+                    <ComboBox x:Name="ThemeComboBox"
+                              Grid.Column="1" 
                               SelectedIndex="0" 
-                              MinWidth="120">
-                        <ComboBoxItem Content="English"/>
-                        <ComboBoxItem Content="Spanish"/>
-                        <ComboBoxItem Content="French"/>
+                              MinWidth="120"
+                              SelectionChanged="ThemeComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Light"/>
+                        <ComboBoxItem Content="Dark"/>
+                        <ComboBoxItem Content="System default"/>
                     </ComboBox>
                 </Grid>
-
-                <!-- Privacy Setting -->
+                
+                <!-- Notifications Settings -->
                 <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      BorderThickness="1" 
-                      Padding="16" 
-                      CornerRadius="8">
+                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                  BorderThickness="1" 
+                  Padding="16" 
+                  CornerRadius="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock Text="Privacy" 
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="Manage data collection settings" 
-                                   Style="{ThemeResource BodyTextBlockStyle}" 
-                                   Opacity="0.6"/>
+                        <TextBlock Text="Notifications" 
+                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Enable or disable push notifications for authentication." 
+                   Style="{ThemeResource BodyTextBlockStyle}" 
+                   Opacity="0.6"/>
                     </StackPanel>
-                    <CheckBox Grid.Column="1" 
-                              Content="Allow data collection"/>
+                    <ToggleSwitch x:Name="NotificationsToggleSwitch" Toggled="NotificationsToggleSwitch_Toggled" Grid.Column="1"/>
                 </Grid>
 
                 <!-- Test Check -->

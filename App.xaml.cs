@@ -15,36 +15,61 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace Windows_App_Lock
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
     public partial class App : Application
     {
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
+        public static Window m_window;
+        private const string ThemeKey = "AppTheme";
         public App()
         {
             this.InitializeComponent();
         }
 
-        /// <summary>
-        /// Invoked when the application is launched.
-        /// </summary>
-        /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             m_window = new MainWindow();
             m_window.Activate();
+            LoadAppTheme();
         }
 
-        private Window m_window;
+        private void LoadAppTheme()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey(ThemeKey))
+            {
+                string theme = localSettings.Values[ThemeKey].ToString();
+                if (App.m_window?.Content is FrameworkElement rootElement)
+                {
+                    if (theme == "Light")
+                    {
+                        rootElement.RequestedTheme = ElementTheme.Light;
+                    }
+                    else if (theme == "Dark")
+                    {
+                        rootElement.RequestedTheme = ElementTheme.Dark;
+                    }
+                    else
+                    {
+                        rootElement.RequestedTheme = ElementTheme.Default;
+                    }
+                }
+            }
+        }
+        public static void SaveAppTheme(ElementTheme theme)
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values[ThemeKey] = theme.ToString();
+            if (m_window.Content is FrameworkElement rootElement)
+            {
+                rootElement.RequestedTheme = theme;
+            }
+        }
+
     }
 }

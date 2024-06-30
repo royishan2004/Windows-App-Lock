@@ -24,6 +24,7 @@ namespace Windows_App_Lock
 
             // Check if app lock is enabled and authenticate
             CheckAppLockOnStartupAsync();
+
         }
 
         private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -57,6 +58,11 @@ namespace Windows_App_Lock
                 case "ActivityLogs":
                     contentFrame.BackStack.Clear();
                     contentFrame.Navigate(typeof(ActivityLogs));
+                    break;
+
+                case "Help":
+                    contentFrame.BackStack.Clear();
+                    contentFrame.Navigate(typeof(Help));
                     break;
 
                 case "About":
