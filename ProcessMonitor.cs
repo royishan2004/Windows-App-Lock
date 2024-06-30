@@ -144,6 +144,10 @@ namespace Windows_App_Lock
         {
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
             bool areNotificationsEnabled = localSettings.Values.ContainsKey(NotificationsKey) && (bool)localSettings.Values[NotificationsKey];
+
+            //string successImage = "ms-appx:///Assets/icons8-correct-100.png"; 
+            //string failureImage = "ms-appx:///Assets/icons8-cancel-100.png";
+
             try
             {
                 var result = await KeyCredentialManager.RequestCreateAsync(AppCredentialKey, KeyCredentialCreationOption.ReplaceExisting);
@@ -157,7 +161,7 @@ namespace Windows_App_Lock
             {
                 Console.WriteLine($"Authentication error: {ex.Message}");
             }
-            if (areNotificationsEnabled) { NotificationHelper.ShowToastNotification("Authentication Failed", $"Failed to authenticate {processName}. \nPlease try again."); }
+            if (areNotificationsEnabled) { NotificationHelper.ShowToastNotification("Authentication Failed", $"Failed to authenticate {processName}. Please try again."); }
             return false;
         }
 
