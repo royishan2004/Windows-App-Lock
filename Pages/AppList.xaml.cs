@@ -1,15 +1,11 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
-using Microsoft.Win32;
 using Windows.Management.Deployment;
+using Microsoft.Win32;
 
 namespace Windows_App_Lock
 {
@@ -23,29 +19,34 @@ namespace Windows_App_Lock
             appListBox.ItemsSource = Apps;
         }
 
-        private void ClosePopupClicked(object sender, RoutedEventArgs e)
-        {
-            addAppPopup.IsOpen = false;
-        }
-
         private async void AddApp_Click(object sender, RoutedEventArgs e)
         {
-            double horizontalOffset = 215;
-            double verticalOffset = -75;
-
-            addAppPopup.HorizontalOffset = horizontalOffset;
-            addAppPopup.VerticalOffset = verticalOffset;
-
-            addAppPopup.IsOpen = true;
-            addAppPopup.Translation += new Vector3(0, 0, 32);
-
             var installedApps = await Task.Run(() => GetInstalledApplications());
             appListView.ItemsSource = installedApps;
+
+            await addAppDialog.ShowAsync();
         }
 
-        private void OKButton_Click(object sender, RoutedEventArgs e)
+        private void OKButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            addAppPopup.IsOpen = false;
+            var selectedApp = (AppInfo)appListView.SelectedItem;
+
+            if (selectedApp != null)
+            {
+                // Add the selected app to the main app list
+                Apps.Add(selectedApp);
+                appListBox.ItemsSource = null;
+                appListBox.ItemsSource = Apps;
+            }
+
+            // Close the dialog
+            addAppDialog.Hide();
+        }
+
+        private void ClosePopupClicked(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            // Simply close the dialog
+            addAppDialog.Hide();
         }
 
         private void DeleteApp_Click(object sender, RoutedEventArgs e)
@@ -63,8 +64,35 @@ namespace Windows_App_Lock
         private List<AppInfo> GetInstalledApplications()
         {
             var installedApps = new List<AppInfo>();
-            string registry_key = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
 
+            // Get UWP apps from PackageManager
+            PackageManager packageManager = new PackageManager();
+            var packages = packageManager.FindPackagesForUserWithPackageTypes("", PackageTypes.Main);
+
+            foreach (var package in packages)
+            {
+                try
+                {
+                    var displayName = package.DisplayName;
+                    var logo = package.Logo?.AbsoluteUri;
+
+                    if (!string.IsNullOrEmpty(displayName))
+                    {
+                        installedApps.Add(new AppInfo
+                        {
+                            Name = displayName,
+                            IconPath = logo
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to retrieve package info: {ex.Message}");
+                }
+            }
+
+            // Get Win32 apps from the registry
+            string registry_key = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
             using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registry_key))
             {
                 if (key != null)
@@ -92,32 +120,9 @@ namespace Windows_App_Lock
                 }
             }
 
-            // Get UWP apps from PackageManager
-            PackageManager packageManager = new PackageManager();
-            var packages = packageManager.FindPackagesForUserWithPackageTypes("", PackageTypes.Main);
-
-            foreach (var package in packages)
-            {
-                try
-                {
-                    var displayName = package.DisplayName;
-                    var logo = package.Logo?.AbsoluteUri;
-
-                    if (!string.IsNullOrEmpty(displayName))
-                    {
-                        installedApps.Add(new AppInfo
-                        {
-                            Name = displayName,
-                            IconPath = logo
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to retrieve package info: {ex.Message}");
-                }
-            }
+            // Sort installedApps by Name
             installedApps = installedApps.OrderBy(app => app.Name).ToList();
+
             return installedApps;
         }
     }

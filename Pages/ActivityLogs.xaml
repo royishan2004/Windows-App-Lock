@@ -19,7 +19,7 @@
         <TextBlock Text="Activity Logs" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25" Grid.Row="0"/>
 
         <ScrollViewer Margin="20" Grid.Row="1">
-            <controls:DataGrid x:Name="LogsDataGrid" AutoGenerateColumns="False" ItemsSource="{x:Bind Logs}">
+            <controls:DataGrid x:Name="LogsDataGrid" AutoGenerateColumns="False" Margin="16" ItemsSource="{x:Bind Logs}">
                 <controls:DataGrid.Columns>
                     <controls:DataGridTextColumn Header="App Name" Binding="{Binding AppName}" Width="*"/>
                     <controls:DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>

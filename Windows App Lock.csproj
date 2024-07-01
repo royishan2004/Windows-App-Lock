@@ -15,6 +15,7 @@
     <Content Remove="Assets\icons8-cancel-100.png" />
     <Content Remove="Assets\icons8-correct-100.png" />
     <Content Remove="Assets\icons8-padlock-400.png" />
+    <Content Remove="Assets\icons8-trash-100 %282%29.png" />
     <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-16.png" />
     <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-24.png" />
     <Content Remove="Assets\Square44x44Logo.altform-lightunplated_targetsize-256.png" />

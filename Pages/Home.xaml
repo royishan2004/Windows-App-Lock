@@ -11,7 +11,7 @@
 
        <StackPanel Orientation="Vertical">
         <TextBlock Text="Windows App Lock" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25"/>
-        <TextBlock Padding="20" HorizontalAlignment="Center" Text="Welcome to your ultimate solution for locking your apps securely with Windows Hello!
+        <TextBlock Padding="20" FontSize="16" HorizontalAlignment="Center" Text="Welcome to your ultimate solution for locking your apps securely with Windows Hello!
                     &#x0a;The below buttons are broken and do not work" TextAlignment="Center"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="85" >
             <Button AutomationProperties.Name="App List" Margin="0,0,10,0">
