@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Notifications;
 
-namespace Windows_App_Lock
+namespace Windows_App_Lock.Components
 {
     public static class NotificationHelper
     {

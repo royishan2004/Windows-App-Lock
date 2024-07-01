@@ -15,6 +15,7 @@ using Microsoft.UI.Xaml.Navigation;
 using System.Threading.Tasks;
 using Windows.Security.Credentials;
 using Windows.Storage;
+using Windows_App_Lock.Services;
 
 namespace Windows_App_Lock
 {

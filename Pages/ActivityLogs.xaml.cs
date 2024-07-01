@@ -8,6 +8,8 @@ using System.Linq;
 using Windows.Storage;
 using Microsoft.UI.Dispatching;
 using CommunityToolkit.WinUI.UI.Controls;
+using Windows_App_Lock.Components;
+using Windows_App_Lock.Services;
 
 namespace Windows_App_Lock
 {
