@@ -9,6 +9,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.Win32;
+using Windows.Management.Deployment;
 
 namespace Windows_App_Lock
 {
@@ -75,7 +76,6 @@ namespace Windows_App_Lock
                             if (subkey != null)
                             {
                                 var displayName = subkey.GetValue("DisplayName") as string;
-                                var installLocation = subkey.GetValue("InstallLocation") as string;
                                 var iconPath = subkey.GetValue("DisplayIcon") as string;
 
                                 if (!string.IsNullOrEmpty(displayName))
@@ -83,7 +83,6 @@ namespace Windows_App_Lock
                                     installedApps.Add(new AppInfo
                                     {
                                         Name = displayName,
-                                        Path = installLocation,
                                         IconPath = iconPath
                                     });
                                 }
@@ -93,6 +92,32 @@ namespace Windows_App_Lock
                 }
             }
 
+            // Get UWP apps from PackageManager
+            PackageManager packageManager = new PackageManager();
+            var packages = packageManager.FindPackagesForUserWithPackageTypes("", PackageTypes.Main);
+
+            foreach (var package in packages)
+            {
+                try
+                {
+                    var displayName = package.DisplayName;
+                    var logo = package.Logo?.AbsoluteUri;
+
+                    if (!string.IsNullOrEmpty(displayName))
+                    {
+                        installedApps.Add(new AppInfo
+                        {
+                            Name = displayName,
+                            IconPath = logo
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to retrieve package info: {ex.Message}");
+                }
+            }
+            installedApps = installedApps.OrderBy(app => app.Name).ToList();
             return installedApps;
         }
     }
@@ -100,7 +125,6 @@ namespace Windows_App_Lock
     public class AppInfo
     {
         public string Name { get; set; }
-        public string Path { get; set; }
         public string IconPath { get; set; }
     }
 }
