@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using Windows.Security.Credentials;
 using System.Timers;
 using Windows.Storage;
+using Windows_App_Lock.Components;
 
-namespace Windows_App_Lock
+namespace Windows_App_Lock.Services
 {
     public class ForegroundAppDetector
     {
