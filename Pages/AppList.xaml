@@ -10,36 +10,45 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel Orientation="Vertical" x:Name="AppListStack">
-        <TextBlock Text="App List" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25"/>
-        <TextBlock Margin="35,20,0,0" FontSize="16" Text="The following apps have been locked by the user."/>
-        <ListView x:Name="appListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionMode="None" Margin="16">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                      BorderThickness="1" 
-                        Padding="10"
-                        Margin="2"
-                        CornerRadius="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <!-- Minimal space for icon -->
-                            <ColumnDefinition Width="*"/>
-                            <!-- Maximum space for name -->
-                            <ColumnDefinition Width="Auto"/>
-                            <!-- Minimal space for delete button -->
-                        </Grid.ColumnDefinitions>
+    <Grid x:Name="AppListGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-                        <Image Source="{Binding IconPath}" Width="30" Height="30" Margin="5" Grid.Column="0"/>
-                        <TextBlock Text="{Binding Name}" FontWeight="Bold" Grid.Column="1" Margin="15,10,0,0"/>
-                        <Button Content="Delete" Margin="10,0,0,0" Click="DeleteApp_Click" Grid.Column="2"/>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <TextBlock Text="App List" HorizontalAlignment="Center" Padding="30" FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="25" Grid.Row="0"/>
+        <TextBlock Margin="35,20,0,0" FontSize="16" Text="The following apps have been locked by the user." Grid.Row="1"/>
 
-        <AppBarButton Label="Add" Icon="Add" Margin="30,10,0,0" Click="AddApp_Click"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="2" Margin="0,16,16,0">
+            <ListView x:Name="appListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionMode="None" Margin="16">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                              BorderThickness="1" 
+                              Padding="10"
+                              Margin="2"
+                              CornerRadius="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="{Binding IconPath}" Width="30" Height="30" Margin="5" Grid.Column="0"/>
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Grid.Column="1" Margin="15,10,0,0"/>
+                            <Button Content="Delete" Margin="10,0,0,0" Click="DeleteApp_Click" Grid.Column="2"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </ScrollViewer>
+        <StackPanel x:Name="EmptyList" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{x:Bind EmptyListVisibility}">
+            <TextBlock Text="No apps have been added. Please click on the 'Add' button to add apps to lock."  FontSize="18" Foreground="Gray" />
+        </StackPanel>
+        <AppBarButton Label="Add" Icon="Add" Margin="30,10,0,0" Click="AddApp_Click" Grid.Row="3"/>
 
         <!-- ContentDialog for adding apps -->
         <ContentDialog
@@ -50,10 +59,9 @@
             SecondaryButtonText="Cancel"
             PrimaryButtonClick="OKButton_Click"
             SecondaryButtonClick="ClosePopupClicked">
-
             <StackPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <ListView x:Name="appListView" SelectionMode="Single" Height="300" Width="500">
+                    <ListView x:Name="appListView" SelectionMode="Multiple" Height="300" Width="500">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -68,5 +76,5 @@
                 </ScrollViewer>
             </StackPanel>
         </ContentDialog>
-    </StackPanel>
+    </Grid>
 </Page>

@@ -6,6 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Management.Deployment;
 using Microsoft.Win32;
+using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json;
+
 
 namespace Windows_App_Lock
 {
@@ -16,29 +19,39 @@ namespace Windows_App_Lock
         public AppList()
         {
             this.InitializeComponent();
+            LoadAppsFromSettings();
             appListBox.ItemsSource = Apps;
         }
-
+        public Visibility EmptyListVisibility => Apps.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         private async void AddApp_Click(object sender, RoutedEventArgs e)
         {
             var installedApps = await Task.Run(() => GetInstalledApplications());
-            appListView.ItemsSource = installedApps;
+            // Filter out apps already in the main app list
+            var filteredApps = installedApps.Where(app => !Apps.Any(a => a.Name == app.Name)).ToList();
+            appListView.ItemsSource = filteredApps;
 
             await addAppDialog.ShowAsync();
         }
 
         private void OKButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            var selectedApp = (AppInfo)appListView.SelectedItem;
+            var selectedApps = appListView.SelectedItems.Cast<AppInfo>().ToList();
 
-            if (selectedApp != null)
+            if (selectedApps.Any())
             {
-                // Add the selected app to the main app list
-                Apps.Add(selectedApp);
+                // Add the selected apps to the main app list
+                foreach (var app in selectedApps)
+                {
+                    Apps.Add(app);
+                }
                 appListBox.ItemsSource = null;
                 appListBox.ItemsSource = Apps;
-            }
+                UpdateEmptyListVisibility();
 
+                // Save the updated Apps list
+                SaveAppsToSettings();
+            }
+            
             // Close the dialog
             addAppDialog.Hide();
         }
@@ -58,6 +71,9 @@ namespace Windows_App_Lock
                 Apps.Remove(selectedApp);
                 appListBox.ItemsSource = null;
                 appListBox.ItemsSource = Apps;
+                UpdateEmptyListVisibility();
+
+                SaveAppsToSettings();
             }
         }
 
@@ -125,6 +141,42 @@ namespace Windows_App_Lock
 
             return installedApps;
         }
+        private void UpdateEmptyListVisibility()
+        {
+            EmptyList.Visibility = EmptyListVisibility;
+        }
+
+        private void LoadAppsFromSettings()
+        {
+            // Access the local settings container
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+            // Check if the AppList key exists
+            if (localSettings.Values.ContainsKey("AppList"))
+            {
+                // Retrieve serializedApps from local settings
+                var serializedApps = localSettings.Values["AppList"].ToString();
+
+                // Deserialize serializedApps back into Apps list
+                Apps = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AppInfo>>(serializedApps);
+
+                // Refresh the appListBox with the loaded Apps list
+                appListBox.ItemsSource = Apps;
+            }
+        }
+
+        private void SaveAppsToSettings()
+        {
+            // Access the local settings container
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+            // Convert Apps list to a format that can be saved (e.g., JSON)
+            var serializedApps = Newtonsoft.Json.JsonConvert.SerializeObject(Apps);
+
+            // Save serializedApps to local settings
+            localSettings.Values["AppList"] = serializedApps;
+        }
+
     }
 
     public class AppInfo
