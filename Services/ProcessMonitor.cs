@@ -82,18 +82,21 @@ namespace Windows_App_Lock.Services
 
         public async Task StartMonitoringAsync()
         {
-            _timer = new Timer(500);
-            _timer.Elapsed += CheckForegroundApp;
-            _timer.Start();
-
-            foreach (var processName in targetProcessNames)
+            await Task.Run(() =>
             {
-                processVisibility[processName] = ForegroundAppDetector.IsWindowVisible(processName);
-                authenticationInProgress[processName] = false;
-            }
+                _timer = new Timer(500);
+                _timer.Elapsed += CheckForegroundAppAsync;
+                _timer.Start();
+
+                foreach (var processName in targetProcessNames)
+                {
+                    processVisibility[processName] = ForegroundAppDetector.IsWindowVisible(processName);
+                    authenticationInProgress[processName] = false;
+                }
+            });
         }
 
-        private static async void CheckForegroundApp(object sender, ElapsedEventArgs e)
+        private static async void CheckForegroundAppAsync(object sender, ElapsedEventArgs e)
         {
             string foregroundProcess = ForegroundAppDetector.GetForegroundProcessName();
             Process[] processes = Process.GetProcessesByName(foregroundProcess);
@@ -213,7 +216,6 @@ namespace Windows_App_Lock.Services
             // Also update the in-memory list
             authenticationLogs = existingLogs;
         }
-
 
         public static List<AuthenticationLog> LoadLogsFromLocalSettings()
         {
