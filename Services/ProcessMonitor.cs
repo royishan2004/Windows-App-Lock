@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Windows.Security.Credentials;
 using System.Timers;
 using Windows.Storage;
 using Windows_App_Lock.Components;
+using Windows_App_Lock.Helpers;
 
 namespace Windows_App_Lock.Services
 {
@@ -46,7 +46,6 @@ namespace Windows_App_Lock.Services
     public class ProcessMonitor
     {
         private const string AppCredentialKey = "AppLockerCredential";
-        private const string NotificationsKey = "NotificationsEnabled";
         private static Timer _timer;
         private static List<string> targetProcessNames = new List<string> { "Discord", "opera", "Notepad", "LenovoVantage" };
         private static HashSet<string> authenticatedProcesses = new HashSet<string>();
@@ -59,6 +58,27 @@ namespace Windows_App_Lock.Services
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool ResumeThread(IntPtr hThread);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr OpenThread(ThreadAccess dwDesiredAccess, bool bInheritHandle, uint dwThreadId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool CloseHandle(IntPtr hObject);
+
+        [Flags]
+        public enum ThreadAccess : int
+        {
+            TERMINATE = 0x0001,
+            SUSPEND_RESUME = 0x0002,
+            GET_CONTEXT = 0x0008,
+            SET_CONTEXT = 0x0010,
+            SET_INFORMATION = 0x0020,
+            QUERY_INFORMATION = 0x0040,
+            SET_THREAD_TOKEN = 0x0080,
+            IMPERSONATE = 0x0100,
+            DIRECT_IMPERSONATION = 0x0200
+        }
 
         public async Task StartMonitoringAsync()
         {
@@ -93,7 +113,7 @@ namespace Windows_App_Lock.Services
                         ProcessMonitor monitor = new ProcessMonitor();
                         monitor.SuspendProcess(foreground);
 
-                        bool isAuthenticated = await monitor.AuthenticateWithWindowsHelloAsync(foregroundProcess);
+                        bool isAuthenticated = await AuthenticationHelper.AuthenticateWithWindowsHelloAsync();
                         if (isAuthenticated)
                         {
                             monitor.ResumeProcess(foreground);
@@ -141,31 +161,6 @@ namespace Windows_App_Lock.Services
             }
         }
 
-        private async Task<bool> AuthenticateWithWindowsHelloAsync(string processName)
-        {
-            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-            bool areNotificationsEnabled = localSettings.Values.ContainsKey(NotificationsKey) && (bool)localSettings.Values[NotificationsKey];
-
-            //string successImage = "ms-appx:///Assets/icons8-correct-100.png"; 
-            //string failureImage = "ms-appx:///Assets/icons8-cancel-100.png";
-
-            try
-            {
-                var result = await KeyCredentialManager.RequestCreateAsync(AppCredentialKey, KeyCredentialCreationOption.ReplaceExisting);
-                if (result.Status == KeyCredentialStatus.Success)
-                {
-                    if (areNotificationsEnabled) { NotificationHelper.ShowToastNotification("Authentication Success", $"You have successfully authenticated {processName}."); }
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Authentication error: {ex.Message}");
-            }
-            if (areNotificationsEnabled) { NotificationHelper.ShowToastNotification("Authentication Failed", $"Failed to authenticate {processName}. Please try again."); }
-            return false;
-        }
-
         private void SuspendProcess(Process process)
         {
             foreach (ProcessThread pT in process.Threads)
@@ -194,118 +189,44 @@ namespace Windows_App_Lock.Services
             }
         }
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr OpenThread(ThreadAccess dwDesiredAccess, bool bInheritHandle, uint dwThreadId);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool CloseHandle(IntPtr hObject);
-
-        [Flags]
-        private enum ThreadAccess : int
+        private static void LogAuthentication(string appName, string status)
         {
-            TERMINATE = 0x0001,
-            SUSPEND_RESUME = 0x0002,
-            GET_CONTEXT = 0x0008,
-            SET_CONTEXT = 0x0010,
-            SET_INFORMATION = 0x0020,
-            QUERY_INFORMATION = 0x0040,
-            SET_THREAD_TOKEN = 0x0080,
-            IMPERSONATE = 0x0100,
-            DIRECT_IMPERSONATION = 0x0200
+            // Load existing logs
+            List<AuthenticationLog> existingLogs = LoadLogsFromLocalSettings();
+
+            // Create new log entry
+            AuthenticationLog newLog = new AuthenticationLog
+            {
+                AppName = appName,
+                Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                Time = DateTime.Now.ToString("HH:mm:ss"),
+                Status = status
+            };
+
+            // Append new log entry to existing logs
+            existingLogs.Add(newLog);
+
+            // Save the updated log list back to local settings
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["AuthenticationLogs"] = Newtonsoft.Json.JsonConvert.SerializeObject(existingLogs);
+
+            // Also update the in-memory list
+            authenticationLogs = existingLogs;
         }
 
-        private static void LogAuthentication(string processName, string status)
-        {
-            try
-            {
-                var logEntry = new AuthenticationLog
-                {
-                    AppName = processName,
-                    Date = DateTime.Now.ToShortDateString(),
-                    Time = DateTime.Now.ToLongTimeString(),
-                    Status = status // Log the status
-                };
-                authenticationLogs.Add(logEntry);
-                SaveLogsToLocalSettings();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to log authentication: {ex.Message}");
-            }
-        }
-
-
-        private static void SaveLogsToLocalSettings()
-        {
-            try
-            {
-                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-                List<string> logEntries = new List<string>();
-
-                // Load existing logs if any
-                if (localSettings.Values.ContainsKey("AuthenticationLogs"))
-                {
-                    string existingLogs = localSettings.Values["AuthenticationLogs"] as string;
-                    logEntries.AddRange(existingLogs.Split(';'));
-                }
-
-                // Append new logs
-                foreach (var log in authenticationLogs)
-                {
-                    string logEntry = $"{log.AppName},{log.Date},{log.Time},{log.Status}"; // Added Status
-                    logEntries.Add(logEntry);
-                }
-
-                // Save all logs
-                localSettings.Values["AuthenticationLogs"] = string.Join(";", logEntries);
-                Console.WriteLine($"Logs saved to local settings.");
-
-                authenticationLogs.Clear();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to save logs: {ex.Message}");
-            }
-        }
 
         public static List<AuthenticationLog> LoadLogsFromLocalSettings()
         {
-            try
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey("AuthenticationLogs"))
             {
-                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-                List<AuthenticationLog> logs = new List<AuthenticationLog>();
-
-                if (localSettings.Values.ContainsKey("AuthenticationLogs"))
+                string logsJson = (string)localSettings.Values["AuthenticationLogs"];
+                if (!string.IsNullOrEmpty(logsJson))
                 {
-                    string logsData = localSettings.Values["AuthenticationLogs"] as string;
-                    string[] logEntries = logsData.Split(';');
-
-                    foreach (string logEntry in logEntries)
-                    {
-                        if (!string.IsNullOrEmpty(logEntry))
-                        {
-                            string[] logParts = logEntry.Split(',');
-                            if (logParts.Length == 4)
-                            {
-                                logs.Add(new AuthenticationLog
-                                {
-                                    AppName = logParts[0],
-                                    Date = logParts[1],
-                                    Time = logParts[2],
-                                    Status = logParts[3] // Added Status
-                                });
-                            }
-                        }
-                    }
+                    return Newtonsoft.Json.JsonConvert.DeserializeObject<List<AuthenticationLog>>(logsJson);
                 }
-
-                return logs;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to load logs: {ex.Message}");
-                return new List<AuthenticationLog>();
-            }
+            return new List<AuthenticationLog>();
         }
     }
 }

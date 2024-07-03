@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Windows.Security.Credentials;
 using Windows.Storage;
 using Windows_App_Lock.Services;
+using Windows_App_Lock.Helpers;
 
 namespace Windows_App_Lock
 {
@@ -144,7 +145,7 @@ namespace Windows_App_Lock
             {
                 TurnOffWarning.IsOpen = true;
                 // Authenticate using Windows Hello when toggling off
-                bool isAuthenticated = await AuthenticateWithWindowsHelloAsync();
+                bool isAuthenticated = await AuthenticationHelper.AuthenticateWithWindowsHelloAsync();
                 if (!isAuthenticated)
                 {
                     // If authentication fails, turn on the toggle switch again
@@ -157,28 +158,7 @@ namespace Windows_App_Lock
             SaveSelfLockState();
         }
 
-        private async Task<bool> AuthenticateWithWindowsHelloAsync()
-        {
-            try
-            {
-                // Request a biometric verification
-                KeyCredentialRetrievalResult result = await KeyCredentialManager.RequestCreateAsync("WindowsHelloSampleCredential", KeyCredentialCreationOption.ReplaceExisting);
-
-                if (result.Status == KeyCredentialStatus.Success)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
+        
         private void LoadSelfLockState()
         {
             // Load the state from local settings

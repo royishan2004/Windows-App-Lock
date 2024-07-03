@@ -2,11 +2,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Threading.Tasks;
-using Windows.Security.Credentials;
 using Windows.Storage;
-using Microsoft.UI.Xaml.Media;
-
-
+using Windows_App_Lock.Helpers;
 
 namespace Windows_App_Lock
 {
@@ -24,7 +21,6 @@ namespace Windows_App_Lock
 
             // Check if app lock is enabled and authenticate
             CheckAppLockOnStartupAsync();
-
         }
 
         private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -82,7 +78,7 @@ namespace Windows_App_Lock
 
             if (isLockEnabled)
             {
-                bool isAuthenticated = await AuthenticateWithWindowsHelloAsync();
+                bool isAuthenticated = await AuthenticationHelper.AuthenticateWithWindowsHelloAsync();
                 if (!isAuthenticated)
                 {
                     blurGrid.Visibility = Visibility.Visible;
@@ -93,30 +89,9 @@ namespace Windows_App_Lock
                     blurGrid.Visibility = Visibility.Collapsed;
                 }
             }
-            else {
+            else
+            {
                 blurGrid.Visibility = Visibility.Collapsed;
-            }
-        }
-
-
-        private async Task<bool> AuthenticateWithWindowsHelloAsync()
-        {
-            try
-            {
-                KeyCredentialRetrievalResult result = await KeyCredentialManager.RequestCreateAsync("WindowsHelloSampleCredential", KeyCredentialCreationOption.ReplaceExisting);
-
-                if (result.Status == KeyCredentialStatus.Success)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
             }
         }
     }

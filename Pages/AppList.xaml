@@ -48,7 +48,7 @@
         <StackPanel x:Name="EmptyList" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{x:Bind EmptyListVisibility}">
             <TextBlock Text="No apps have been added. Please click on the 'Add' button to add apps to lock."  FontSize="18" Foreground="Gray" />
         </StackPanel>
-        <AppBarButton Label="Add" Icon="Add" Margin="30,10,0,0" Click="AddApp_Click" Grid.Row="3"/>
+        <AppBarButton Label="Add" Icon="Add" Margin="30,10,0,10" Click="AddApp_Click" Grid.Row="3"/>
 
         <!-- ContentDialog for adding apps -->
         <ContentDialog
